@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoHub - Premium Motorcycles</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --gold: #e94560;
+            --text: #ffffff;
+            --text-muted: #b8b8b8;
+            --bg: #0f0f23;
+            --card-bg: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.1);
+            --shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] {
+            --primary: #ffffff;
+            --secondary: #f8f9fa;
+            --accent: #e9ecef;
+            --gold: #dc3545;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --bg: #f8f9fa;
+            --card-bg: rgba(0,0,0,0.03);
+            --border: rgba(0,0,0,0.1);
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--primary);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--gold), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--gold);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle, .user-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.8rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover, .user-btn:hover {
+            background: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .mobile-menu-btn span {
+            width: 25px;
+            height: 3px;
+            background: var(--text);
+            transition: 0.3s;
+        }
+
+        /* Auth Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--primary);
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid var(--border);
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--gold);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--gold), #ff6b6b);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gold);
+            color: white;
+        }
+
+        .modal-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--gold);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gold);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23e94560" stop-opacity="0.1"/><stop offset="100%" stop-color="%23e94560" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"><animate attributeName="r" values="100;150;100" dur="3s" repeatCount="indefinite"/></circle><circle cx="800" cy="300" r="80" fill="url(%23a)"><animate attributeName="r" values="80;120;80" dur="4s" repeatCount="indefinite"/></circle></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--gold), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Search */
+        .search-section {
+            padding: 5rem 0;
+            background: var(--secondary);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1.2rem 1.5rem;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .search-btn {
+            padding: 1.2rem 2rem;
+            border-radius: 50px;
+        }
+
+        /* Bikes Grid */
+        .bikes-section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, var(--gold), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bikes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .bike-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .bike-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: var(--shadow);
+            border-color: var(--gold);
+        }
+
+        .bike-image {
+            height: 250px;
+            background: linear-gradient(45deg, var(--accent), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bike-image i {
+            animation: bikeFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes bikeFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .bike-content {
+            padding: 2rem;
+        }
+
+        .bike-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .bike-brand {
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .bike-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .spec {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spec-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spec-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        .bike-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-align: center;
+            padding: 1rem;
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(233, 69, 96, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .favorite-btn:hover {
+            background: var(--gold);
+            transform: scale(1.1);
+        }
+
+        .favorite-btn.active {
+            background: #ff6b6b;
+        }
+
+        /* Favorites */
+        .favorites-section {
+            padding: 5rem 0;
+            background: var(--secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--primary);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .bikes-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .modal-content {
+                padding: 2rem;
+                margin: 1rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <div class="logo">MotoHub</div>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="nav-link" onclick="showSection('home')">Home</a></li>
+                    <li><a href="#bikes" class="nav-link" onclick="showSection('bikes')">Bikes</a></li>
+                    <li><a href="#favorites" class="nav-link" onclick="showSection('favorites')">Favorites</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="theme-toggle" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="user-btn" onclick="toggleAuthModal()">
+                        <i class="fas fa-user"></i>
+                        <span id="userName">Account</span>
+                    </button>
+                    <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-tabs">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('signup')">Signup</div>
+            </div>
+            
+            <!-- Login Tab -->
+            <div class="tab-content active" id="loginTab">
+                <h2>Login to MotoHub</h2>
+                <form onsubmit="login(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+            </div>
+
+            <!-- Signup Tab -->
+            <div class="tab-content" id="signupTab">
+                <h2>Join MotoHub</h2>
+                <form onsubmit="signup(event)">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="signupName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Signup
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Discover Your Dream Ride</h1>
+                <p>Premium motorcycles with cutting-edge performance and style. Find your perfect bike today.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search bikes by name..." onkeyup="searchBikes()">
+                <button class="btn btn-primary search-btn" onclick="searchBikes()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bikes Section -->
+    <section id="bikes" class="bikes-section">
+        <div class="container">
+            <h2 class="section-title">Featured Bikes</h2>
+            <div class="bikes-grid" id="bikesGrid">
+                <!-- Bikes will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section id="favorites" class="favorites-section">
+        <div class="container">
+            <h2 class="section-title">Your Favorites</h2>
+            <div id="favoritesGrid" class="bikes-grid">
+                <div class="empty-state">
+                    <i class="fas fa-heart" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                    <h3>No favorites yet</h3>
+                    <p>Save your favorite bikes to see them here</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Sample bikes data
+        const bikes = [
+            { id: 1, name: 'Ninja H2R', brand: 'Kawasaki', engine: '998cc', mileage: '15 kmpl', topSpeed: '400 km/h', price: '$55,000', icon: 'fas fa-motorcycle' },
+            { id: 2, name: 'Panigale V4', brand: 'Ducati', engine: '1103cc', mileage: '12 kmpl', topSpeed: '350 km/h', price: '$32,000', icon: 'fas fa-motorcycle' },
+            { id: 3, name: 'GSX-R1000', brand: 'Suzuki', engine: '999cc', mileage: '16 kmpl', topSpeed: '320 km/h', price: '$18,500', icon: 'fas fa-motorcycle' },
+            { id: 4, name: 'CBR1000RR-R', brand: 'Honda', engine: '999cc', mileage: '17 kmpl', topSpeed: '340 km/h', price: '$28,000', icon: 'fas fa-motorcycle' },
+            { id: 5, name: 'YZF-R1', brand: 'Yamaha', engine: '998cc', mileage: '14 kmpl', topSpeed: '310 km/h', price: '$22,000', icon: 'fas fa-motorcycle' },
+            { id: 6, name: 'S1000RR', brand: 'BMW', engine: '999cc', mileage: '13 kmpl', topSpeed: '360 km/h', price: '$25,500', icon: 'fas fa-motorcycle' },
+            { id: 7, name: 'Aprilia RSV4', brand: 'Aprilia', engine: '1099cc', mileage: '11 kmpl', topSpeed: '330 km/h', price: '$24,000', icon: 'fas fa-motorcycle' },
+            { id: 8, name: 'MV Agusta F4', brand: 'MV Agusta', engine: '998cc', mileage: '12 kmpl', topSpeed: '315 km/h', price: '$29,000', icon: 'fas fa-motorcycle' }
+        ];
+
+        let currentUser = null;
+        let filteredBikes = [...bikes];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUser();
+            renderBikes();
+            renderFavorites();
+            updateNavbar();
+            showSection('home');
+        });
+
+        // User Authentication
+        function signup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            const user = { name, email, password };
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            localStorage.setItem(`user_${email}`, JSON.stringify({ favorites: [] }));
+            
+            currentUser = user;
+            toggleAuthModal();
+            updateNavbar();
+            alert('Signup successful!');
+        }
+
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user && user.email === email && user.password === password) {
+                currentUser = user;
+                toggleAuthModal();
+                updateNavbar();
+                alert('Login successful!');
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function loadUser() {
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                updateNavbar();
+            }
+        }
+
+        function updateNavbar() {
+            const userName = document.getElementById('userName');
+            if (currentUser) {
+                userName.textContent = currentUser.name;
+            } else {
+                userName.textContent = 'Account';
+            }
+        }
+
+        // Modal functions
+        function toggleAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.toggle('active');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update theme toggle icon
+            const toggle = document.querySelector('.theme-toggle i');
+            toggle.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Mobile menu
+        function toggleMobileMenu() {
+            const menu = document.querySelector('.nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Section navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Search bikes
+        function searchBikes() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredBikes = bikes.filter(bike => 
+                bike.name.toLowerCase().includes(query) || 
+                bike.brand.toLowerCase().includes(query)
+            );
+            renderBikes();
+        }
+
+        // Render bikes
+        function renderBikes() {
+            const grid = document.getElementById('bikesGrid');
+            grid.innerHTML = filteredBikes.map(bike => `
+                <div class="bike-card" data-bike-id="${bike.id}">
+                    <button class="favorite-btn" onclick="toggleFavorite(${bike.id}, event)">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <div class="bike-image">
+                        <i class="${bike.icon}"></i>
+                    </div>
+                    <div class="bike-content">
+                        <div class="bike-name">${bike.name}</div>
+                        <div class="bike-brand">${bike.brand}</div>
+                        <div class="bike-specs">
+                            <div class="spec">
+                                <div class="spec-label">Engine</div>
+                                <div class="spec-value">${bike.engine}</div>
+                            </div>
+                            <div class="spec">
+                                <div class="spec-label">Mileage</div>
+                                <div class="spec-value">${bike.mileage}</div>
+                            </div>
+                            <div class="spec">
+                                <div class="spec-label">Top Speed</div>
+                                <div class="spec-value">${bike.topSpeed}</div>
+                            </div>
+                            <div class="spec">
+                                <div class="spec-label">Price</div>
+                                <div class="spec-value">${bike.price}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Favorites system
+        function toggleFavorite(bikeId, event) {
+            event.stopPropagation();
+            
+            if (!currentUser) {
+                alert('Please login to save favorites!');
+                toggleAuthModal();
+                return;
+            }
+
+            const userKey = `user_${currentUser.email}`;
+            const userData = JSON.parse(localStorage.getItem(userKey)) || { favorites: [] };
+            const isFavorited = userData.favorites.includes(bikeId);
+            
+            if (isFavorited) {
+                userData.favorites = userData.favorites.filter(id => id !== bikeId);
+                event.target.closest('.favorite-btn').innerHTML = '<i class="far fa-heart"></i>';
+            } else {
+                userData.favorites.push(bikeId);
+                event.target.closest('.favorite-btn').innerHTML = '<i class="fas fa-heart"></i>';
+                event.target.closest('.favorite-btn').classList.add('active');
+            }
+            
+            localStorage.setItem(userKey, JSON.stringify(userData));
+            renderFavorites();
+        }
+
+        function renderFavorites() {
+            if (!currentUser) {
+                document.getElementById('favoritesGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-lock" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <h3>Please login</h3>
+                        <p>Login to save and view your favorite bikes</p>
+                        <button class="btn btn-primary" onclick="toggleAuthModal()">Login</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const userKey = `user_${currentUser.email}`;
+            const userData = JSON.parse(localStorage.getItem(userKey));
+            const favorites = userData ? userData.favorites : [];
+
+            if (favorites.length === 0) {
+                document.getElementById('favoritesGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-heart" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <h3>No favorites yet</h3>
+                        <p>Save your favorite bikes to see them here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const favoriteBikes = bikes.filter(bike => favorites.includes(bike.id));
+            document.getElementById('favoritesGrid').innerHTML = favoriteBikes.map(bike => `
+                <div class="bike-card">
+                    <button class="favorite-btn active" onclick="toggleFavorite(${bike.id}, event)">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="bike-image">
+                        <i class="${bike.icon}"></i>
+                    </div>
+                    <div class="bike-content">
+                        <div class="bike-name">${bike.name}</div>
+                        <div class="bike-brand">${bike.brand}</div>
+                        <div class="bike-specs">
+                            <div class="spec">
+                                <div class="spec-label">Engine</div>
+                                <div class="spec-value">${bike.engine}</div>
+                            </div>
+                            <div class="spec">
+                                <div class="spec-label">Mileage</div>
+                                <div class="spec-value">${bike.mileage}</div>
+                            </div>
+                            <div class="spec">
+                                <div class="spec-label">Top Speed</div>
+                                <div class="spec-value">${bike.topSpeed}</div>
+                            </div>
+                            <div class="spec">
+                                <div class="spec-label">Price</div>
+                                <div class="spec-value">${bike.price}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load theme preference
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle i').className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+
+        // Close modal on outside click
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
