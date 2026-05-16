@@ -587,6 +587,19 @@
             background: var(--gold);
             border-radius: 4px;
         }
+        .nav-container{
+    display:flex;
+    align-items:center;
+}
+
+.mobile-menu-btn{
+    order:-1;
+    margin-right:15px;
+}
+
+.logo{
+    margin-right:auto;
+}
     </style>
 </head>
 <body data-theme="dark">
@@ -594,6 +607,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-container">
+                <div class="logo">MotoHub</div>
                 <ul class="nav-menu">
                     <li><a href="#home" class="nav-link" onclick="showSection('home')">Home</a></li>
                     <li><a href="#bikes" class="nav-link" onclick="showSection('bikes')">Bikes</a></li>
@@ -612,8 +626,7 @@
                         <span></span>
                         <span></span>
                     </div>
-                   <div class="logo">MotoHub</div>
-            </div>
+                </div>
             </div>        
         </div>
     </nav>
