@@ -438,6 +438,9 @@
             color: var(--gold);
             position: relative;
             overflow: hidden;
+            width: 100%;
+            height: 100%;
+            object-fit: co
         }
 
         .bike-image i {
@@ -1037,7 +1040,7 @@
                         <i class="fas fa-heart"></i>
                     </button>
                     <div class="bike-image">
-                       <i class="${bike.icon}"></i> 
+   <img src="${bike.image}" alt="${bike.name}">
                     </div>
                     <div class="bike-content">
                         <div class="bike-name">${bike.name}</div>
